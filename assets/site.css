@@ -867,21 +867,22 @@ a.contact-link:focus-visible {
 
 .co-agent {
   display: grid;
-  grid-template-columns: 104px minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 24px;
   align-items: center;
-  margin-top: 20px;
-  padding-top: 18px;
+  min-width: 0;
+  margin-top: 4px;
+  padding: 26px 0 0;
   border-top: 1px solid rgb(250 248 244 / 16%);
 }
 
 .co-agent-portrait-frame {
   position: relative;
-  width: 104px;
-  height: 126px;
+  width: 118px;
+  height: 148px;
   overflow: hidden;
   border: 1px solid rgb(216 195 145 / 72%);
-  border-radius: 52px 52px 8px 8px;
+  border-radius: 59px 59px 8px 8px;
   background: var(--linen);
   box-shadow: 0 14px 30px rgb(7 14 22 / 24%);
 }
@@ -895,6 +896,11 @@ a.contact-link:focus-visible {
 
 .co-agent-details {
   min-width: 0;
+}
+
+.co-agent .contact-link span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .co-label {
@@ -916,13 +922,13 @@ a.contact-link:focus-visible {
 
 @media (max-width: 420px) {
   .co-agent {
-    grid-template-columns: 88px minmax(0, 1fr);
-    gap: 14px;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 16px;
   }
 
   .co-agent-portrait-frame {
-    width: 88px;
-    height: 110px;
+    width: 96px;
+    height: 120px;
   }
 
   .co-agent .contact-link {
@@ -1081,6 +1087,7 @@ a.contact-link:focus-visible {
   .terms-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .contact-grid { gap: 64px; }
   .agent-card { grid-template-columns: 168px minmax(0, 1fr); align-items: start; padding: 32px; }
+  .co-agent { grid-column: 1 / -1; }
   .sticky-cta { display: none; }
   .site-footer { padding-bottom: 42px; }
 }
