@@ -59,12 +59,40 @@ const { chromium } = require("playwright-core");
   if (await page.locator("#gallery img[loading=lazy]").count() !== 15) throw new Error("gallery lazy-loading count mismatch");
   console.log("PASS: semantic h1 and 15 lazy gallery images");
 
+  await page.locator(".agent-portrait").scrollIntoViewIfNeeded();
+  await page.locator(".agent-portrait").evaluate((image) => image.decode());
+  const brandProof = await page.evaluate(() => {
+    const portrait = document.querySelector(".agent-portrait");
+    const rect = portrait.getBoundingClientRect();
+    return {
+      portraitCssWidth: rect.width,
+      portraitNaturalWidth: portrait.naturalWidth,
+      effectiveDpr: portrait.naturalWidth / rect.width,
+      portraitAlt: portrait.alt,
+      wordmarkCount: document.querySelectorAll('.brand img[src$="logo-marzucco-luxury-white.svg"], .footer-logo[src$="logo-marzucco-luxury-white.svg"]').length,
+    };
+  });
+  if (brandProof.portraitCssWidth !== 168 || brandProof.portraitNaturalWidth !== 352 || brandProof.effectiveDpr < 2 ||
+      !brandProof.portraitAlt || brandProof.wordmarkCount !== 2) {
+    throw new Error(`brand identity gate failed: ${JSON.stringify(brandProof)}`);
+  }
+  console.log(`PASS: portrait and wordmarks ${JSON.stringify(brandProof)}`);
+
   await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.2));
   await page.waitForTimeout(450);
   if (!await page.locator("#stickyCta").evaluate((element) => element.classList.contains("visible"))) {
     throw new Error("sticky mobile CTA did not appear after hero exit");
   }
   console.log("PASS: sticky mobile CTA appears after hero exits");
+  const navProof = await page.locator(".site-nav").evaluate((element) => ({
+    condensed: element.classList.contains("is-condensed"),
+    position: getComputedStyle(element).position,
+    backdropFilter: getComputedStyle(element).backdropFilter,
+  }));
+  if (!navProof.condensed || navProof.position !== "fixed" || !navProof.backdropFilter.includes("blur")) {
+    throw new Error(`condensed navigation gate failed: ${JSON.stringify(navProof)}`);
+  }
+  console.log(`PASS: fixed condensed glass navigation ${JSON.stringify(navProof)}`);
 
   await page.locator("#gallery").scrollIntoViewIfNeeded();
   await page.locator(".glightbox").first().click();
@@ -97,10 +125,14 @@ const { chromium } = require("playwright-core");
     revealOpacity: getComputedStyle(document.querySelector(".reveal")).opacity,
     heroAnimationDuration: getComputedStyle(document.querySelector(".hero-media img")).animationDuration,
     waterlineAnimationDuration: getComputedStyle(document.querySelector(".hero + .section"), "::before").animationDuration,
+    navTransitionDuration: getComputedStyle(document.querySelector(".site-nav")).transitionDuration,
+    galleryTransitionDuration: getComputedStyle(document.querySelector(".gallery-item img")).transitionDuration,
   }));
   const heroSeconds = Number.parseFloat(reduced.heroAnimationDuration);
   const waterlineSeconds = Number.parseFloat(reduced.waterlineAnimationDuration);
-  if (reduced.revealOpacity !== "1" || heroSeconds > 0.00001 || waterlineSeconds > 0.00001) {
+  const navSeconds = Number.parseFloat(reduced.navTransitionDuration);
+  const gallerySeconds = Number.parseFloat(reduced.galleryTransitionDuration);
+  if (reduced.revealOpacity !== "1" || heroSeconds > 0.00001 || waterlineSeconds > 0.00001 || navSeconds > 0.00001 || gallerySeconds > 0.00001) {
     throw new Error(`reduced-motion gate failed: ${JSON.stringify(reduced)}`);
   }
   console.log(`PASS: reduced-motion gate ${JSON.stringify(reduced)}`);
