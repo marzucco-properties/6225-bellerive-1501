@@ -207,7 +207,18 @@
             <a class="contact-link" href="tel:+12397765194" data-analytics-event="phone_tap"><svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg><span>(239) 776-5194</span></a>
             <a class="contact-link" href="mailto:dluxnaples@gmail.com" data-analytics-event="email_tap"><svg class="icon" aria-hidden="true"><use href="#icon-mail"/></svg><span>dluxnaples@gmail.com</span></a>
             <div class="contact-link"><svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg><span>400 5th Ave S, Suite 305, Naples, FL 34102</span></div>
-            <div class="co-agent"><div class="co-label">Co-Listing Agent</div><div class="co-name">Aimee Rodriguez</div><a class="contact-link" href="tel:+12392386358" data-analytics-event="phone_tap"><svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg><span>(239) 238-6358</span></a></div>
+            <div class="co-agent">
+              <div class="co-agent-portrait-frame">
+                <img class="co-agent-portrait" src="assets/brand/aimee-rodriguez-portrait.webp" width="520" height="676" loading="lazy" decoding="async" alt="Aimee Rodriguez, Broker Associate">
+              </div>
+              <div class="co-agent-details">
+                <div class="co-label">Co-Listing Agent</div>
+                <div class="co-name">Aimee Rodriguez</div>
+                <div class="co-license">Broker Associate · Florida License BK3413976</div>
+                <a class="contact-link" href="tel:+12392386358" data-analytics-event="phone_tap"><svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg><span>(239) 238-6358</span></a>
+                <a class="contact-link" href="mailto:r.aimee@ymail.com" data-analytics-event="email_tap"><svg class="icon" aria-hidden="true"><use href="#icon-mail"/></svg><span>r.aimee@ymail.com</span></a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -218,17 +229,15 @@
         <p class="eyebrow">Feedback &amp; Interest</p>
         <h2 id="feedback-title">Tell Us What You Think</h2>
         <p class="lead">Toured the residence or viewed it online? A moment of feedback helps — and if you'd like a showing, this is the fastest way to request one.</p>
-        <!-- Feedback endpoint pending. Keep action empty and submit disabled until the first-party endpoint exists. -->
-        <!-- [html-validate-disable-next attribute-allowed-values -- Intentional empty action while endpoint is pending.] -->
-        <form id="feedbackForm" action="" method="post">
+        <form id="feedbackForm">
           <label for="fb-name">Name</label><input id="fb-name" type="text" name="name" autocomplete="name" required>
           <label for="fb-email">Email</label><input id="fb-email" type="email" name="email" autocomplete="email" required>
           <label for="fb-interest">I'm reaching out about</label><select id="fb-interest" name="interest" required><option value="" disabled selected>Choose one</option><option>Requesting a showing</option><option>Feedback after a tour</option><option>Feedback on the online listing</option><option>Application &amp; approval questions</option><option>Something else</option></select>
           <label for="fb-message">Message</label><textarea id="fb-message" name="message" rows="5" placeholder="What stood out? What questions do you have?"></textarea>
           <input type="hidden" name="_subject" value="Bellerive #1501 — Website Feedback / Inquiry">
           <label class="honeypot" for="fb-gotcha">Leave this field blank</label><input class="honeypot" id="fb-gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
-          <button type="submit" class="button" data-analytics-event="feedback_submitted" disabled>Send Message</button>
-          <p class="fine">Online submission is pending. Please use the email or phone contact above.</p>
+          <button type="submit" class="button" data-analytics-event="feedback_submitted">Send Message</button>
+          <p class="fine">Opens your email app with the property details and your message filled in.</p>
           <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
         </form>
       </div>

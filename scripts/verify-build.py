@@ -130,13 +130,16 @@ if "IntersectionObserver" not in (ROOT / "assets/site.js").read_text():
     fail("IntersectionObserver implementation missing")
 feedback_form = current.select_one("#feedbackForm")
 feedback_submit = current.select_one('#feedbackForm button[type="submit"]')
-if feedback_form is None or feedback_form.get("action") != "":
-    fail("feedback form action must remain empty")
-if feedback_submit is None or not feedback_submit.has_attr("disabled"):
-    fail("feedback form submit must remain disabled")
+if feedback_form is None or feedback_form.has_attr("action"):
+    fail("feedback form must be handled by first-party JavaScript")
+if feedback_submit is None or feedback_submit.has_attr("disabled"):
+    fail("feedback form submit must be enabled")
+site_js = (ROOT / "assets/site.js").read_text()
+if "mailto:dluxnaples@gmail.com" not in site_js or "r.aimee%40ymail.com" not in site_js:
+    fail("feedback form mail composer is missing listing-agent recipients")
 if "plausible" in current_source.lower() or "formspree" in current_source.lower():
     fail("third-party analytics/form dependency remains")
 if 'data-analytics-event="gallery_open"' not in current_source or 'data-analytics-scroll-event="scroll_75"' not in current_source:
     fail("first-party gallery/scroll analytics hooks missing")
-print("PASS: SVG icon, semantic h1, sticky CTA, motion, and inert first-party integration gates")
+print("PASS: SVG icon, semantic h1, sticky CTA, motion, and first-party email-composer gates")
 print("VERDICT: PASS")

@@ -24,6 +24,34 @@
     if (target) trackAnalyticsEvent(target.dataset.analyticsEvent);
   });
 
+  var feedbackForm = document.getElementById("feedbackForm");
+  var formStatus = document.getElementById("formStatus");
+  if (feedbackForm) {
+    feedbackForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (!feedbackForm.reportValidity()) return;
+
+      var formData = new FormData(feedbackForm);
+      if (formData.get("_gotcha")) return;
+
+      var subject = "6225 Bellerive Ave #1501 — " + formData.get("interest");
+      var body = [
+        "Name: " + formData.get("name"),
+        "Email: " + formData.get("email"),
+        "Interest: " + formData.get("interest"),
+        "",
+        formData.get("message") || "No additional message provided.",
+        "",
+        "Property: 6225 Bellerive Ave #1501, Naples, FL 34119",
+        "Listing page: " + window.location.href.split("#")[0]
+      ].join("\n");
+      var mailto = "mailto:dluxnaples@gmail.com?cc=r.aimee%40ymail.com&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+
+      if (formStatus) formStatus.textContent = "Opening your email app. Review the message, then press Send.";
+      window.location.href = mailto;
+    });
+  }
+
   if ("IntersectionObserver" in window && hero && stickyCta) {
     new IntersectionObserver(function (entries) {
       stickyCta.classList.toggle("visible", !entries[0].isIntersecting);
