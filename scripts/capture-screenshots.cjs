@@ -2,17 +2,21 @@
 // Capture four full-page evidence screenshots after triggering scroll reveals.
 
 const path = require("path");
+const fs = require("fs");
 const { chromium } = require("playwright-core");
 
 const root = path.resolve(__dirname, "..");
+const evidenceDir = process.env.EVIDENCE_DIR || path.join(root, "evidence");
+const requestedViewports = new Set((process.env.VIEWPORTS || "360,390,768,1280").split(","));
 const cases = [
   { name: "360", width: 360, height: 800 },
   { name: "390", width: 390, height: 844 },
   { name: "768", width: 768, height: 1024 },
   { name: "1280", width: 1280, height: 900 },
-];
+].filter((item) => requestedViewports.has(item.name));
 
 (async () => {
+  fs.mkdirSync(evidenceDir, { recursive: true });
   const browser = await chromium.launch({
     executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     headless: true,
@@ -44,7 +48,7 @@ const cases = [
       await new Promise((resolve) => setTimeout(resolve, 300));
     });
     await page.screenshot({
-      path: path.join(root, "evidence", `screenshot-${item.name}.png`),
+      path: path.join(evidenceDir, `screenshot-${item.name}.png`),
       fullPage: true,
     });
     const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);

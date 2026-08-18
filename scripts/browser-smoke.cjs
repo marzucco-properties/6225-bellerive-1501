@@ -11,13 +11,49 @@ const { chromium } = require("playwright-core");
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   const pageErrors = [];
+  const consoleErrors = [];
   const thirdPartyRequests = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
   page.on("request", (request) => {
     const url = new URL(request.url());
     if (!['127.0.0.1', 'localhost'].includes(url.hostname)) thirdPartyRequests.push(request.url());
   });
   await page.goto("http://127.0.0.1:8088/", { waitUntil: "networkidle" });
+
+  const fontProof = await page.evaluate(async () => {
+    await document.fonts.ready;
+    const hero = getComputedStyle(document.querySelector("h1"));
+    const body = getComputedStyle(document.body);
+    const loadedFaces = Array.from(document.fonts)
+      .filter((face) => ["Marcellus", "Mulish"].includes(face.family))
+      .map((face) => `${face.family}:${face.weight}:${face.status}`);
+    return {
+      marcellus400: document.fonts.check('400 32px "Marcellus"', "Bellerive"),
+      mulish400: document.fonts.check('400 16px "Mulish"', "Bellerive"),
+      mulish600: document.fonts.check('600 16px "Mulish"', "Bellerive"),
+      heroFamily: hero.fontFamily,
+      bodyFamily: body.fontFamily,
+      loadedFaces,
+      fontResources: performance.getEntriesByType("resource")
+        .map((entry) => entry.name)
+        .filter((url) => url.endsWith(".woff2")),
+    };
+  });
+  if (!fontProof.marcellus400 || !fontProof.mulish400 || !fontProof.mulish600 ||
+      !fontProof.heroFamily.startsWith("Marcellus") || !fontProof.bodyFamily.startsWith("Mulish") ||
+      !fontProof.loadedFaces.includes("Marcellus:400:loaded") ||
+      !fontProof.loadedFaces.includes("Mulish:400:loaded") ||
+      !fontProof.loadedFaces.includes("Mulish:600:loaded") ||
+      !fontProof.fontResources.some((url) => url.includes("/assets/fonts/marcellus/")) ||
+      !fontProof.fontResources.some((url) => url.includes("/assets/fonts/mulish/mulish-400-")) ||
+      !fontProof.fontResources.some((url) => url.includes("/assets/fonts/mulish/mulish-600-")) ||
+      fontProof.fontResources.some((url) => new URL(url).origin !== "http://127.0.0.1:8088")) {
+    throw new Error(`self-hosted font gate failed: ${JSON.stringify(fontProof)}`);
+  }
+  console.log(`PASS: self-hosted fonts loaded and applied ${JSON.stringify(fontProof)}`);
 
   if (await page.locator("h1").count() !== 1) throw new Error("expected exactly one h1");
   if (await page.locator("#gallery img[loading=lazy]").count() !== 15) throw new Error("gallery lazy-loading count mismatch");
@@ -48,6 +84,7 @@ const { chromium } = require("playwright-core");
   console.log("PASS: zero third-party network requests");
 
   if (pageErrors.length) throw new Error(`page errors: ${pageErrors.join(" | ")}`);
+  if (consoleErrors.length) throw new Error(`console errors: ${consoleErrors.join(" | ")}`);
   await context.close();
 
   const reducedContext = await browser.newContext({
