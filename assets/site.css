@@ -7,7 +7,9 @@
   --linen: #f1ede6;
   --max-width: 1080px;
   --radius: 4px;
-  --shadow: 0 18px 44px rgb(28 39 51 / 12%);
+  --ease-ui: cubic-bezier(.4, 0, .2, 1);
+  --ease-reveal: cubic-bezier(.22, 1, .36, 1);
+  --shadow-soft: 0 8px 20px rgb(28 39 51 / 7%), 0 24px 52px rgb(28 39 51 / 6%);
 }
 
 @font-face {
@@ -160,11 +162,21 @@ textarea:focus-visible,
 }
 
 .site-nav {
-  position: absolute;
+  position: fixed;
   inset: 0 0 auto;
-  z-index: 20;
+  z-index: 200;
   color: var(--paper);
-  border-bottom: 1px solid rgb(250 248 244 / 24%);
+  border-bottom: 1px solid rgb(250 248 244 / 18%);
+  background: rgb(18 29 39 / 12%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background-color 420ms var(--ease-ui), border-color 420ms var(--ease-ui), box-shadow 420ms var(--ease-ui);
+}
+
+.site-nav.is-condensed {
+  border-bottom-color: rgb(156 131 82 / 70%);
+  background: rgb(18 29 39 / 88%);
+  box-shadow: 0 8px 24px rgb(28 39 51 / 12%);
 }
 
 .nav-inner {
@@ -173,6 +185,11 @@ textarea:focus-visible,
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  transition: min-height 420ms var(--ease-ui);
+}
+
+.site-nav.is-condensed .nav-inner {
+  min-height: 60px;
 }
 
 .brand {
@@ -181,6 +198,17 @@ textarea:focus-visible,
   font-size: 0.93rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  transition: font-size 420ms var(--ease-ui), letter-spacing 420ms var(--ease-ui), opacity 300ms var(--ease-ui);
+}
+
+.brand:hover,
+.brand:focus-visible {
+  opacity: 0.82;
+}
+
+.site-nav.is-condensed .brand {
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
 }
 
 .nav-links {
@@ -193,6 +221,7 @@ textarea:focus-visible,
 }
 
 .nav-links a {
+  position: relative;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
@@ -200,10 +229,29 @@ textarea:focus-visible,
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.05em;
+  transition: color 300ms var(--ease-ui);
 }
 
-.nav-links a:hover {
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 7px;
+  height: 1px;
+  background: #d8c391;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 360ms var(--ease-ui);
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible {
   color: #d8c391;
+}
+
+.nav-links a:hover::after,
+.nav-links a:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .hero {
@@ -345,6 +393,8 @@ h3 {
 }
 
 .button {
+  position: relative;
+  overflow: hidden;
   min-height: 48px;
   display: inline-flex;
   align-items: center;
@@ -358,11 +408,41 @@ h3 {
   font-weight: 600;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: background-color 300ms ease;
+  transition: color 360ms var(--ease-ui), background-color 360ms var(--ease-ui), border-color 360ms var(--ease-ui), transform 360ms var(--ease-ui);
 }
 
-.button:hover {
+.button::after {
+  content: "";
+  position: absolute;
+  inset: auto 20px 7px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 360ms var(--ease-ui);
+}
+
+.button:hover,
+.button:focus-visible {
+  color: #fff;
   background: #101820;
+  border-color: #c2a76c;
+  transform: translateY(-2px);
+}
+
+.button:hover::after,
+.button:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.button:disabled:hover {
+  transform: none;
 }
 
 .button-ghost {
@@ -389,10 +469,11 @@ h3 {
   content: "";
   position: absolute;
   inset: 0 0 auto;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgb(143 169 180 / 30%) 35%, rgb(156 131 82 / 30%) 50%, transparent 65%);
-  background-size: 220% 100%;
-  animation: waterline 6s ease-in-out infinite;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 2%, rgb(143 169 180 / 18%) 25%, rgb(156 131 82 / 72%) 45%, rgb(250 248 244 / 78%) 50%, rgb(156 131 82 / 72%) 55%, rgb(143 169 180 / 18%) 75%, transparent 98%);
+  background-size: 240% 100%;
+  filter: drop-shadow(0 0 4px rgb(156 131 82 / 28%));
+  animation: waterline 5.4s var(--ease-reveal) infinite;
 }
 
 @keyframes waterline {
@@ -429,28 +510,55 @@ h3 {
   overflow: hidden;
   border-radius: var(--radius);
   background: #dfe3e3;
-  box-shadow: 0 8px 26px rgb(28 39 51 / 8%);
+  box-shadow: var(--shadow-soft);
+}
+
+.gallery-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 48%, rgb(28 39 51 / 24%) 100%);
+  opacity: 0;
+  transition: opacity 600ms var(--ease-ui);
 }
 
 .gallery-item img {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  transition: transform 300ms ease;
+  transition: transform 600ms var(--ease-ui), filter 600ms var(--ease-ui);
 }
 
-.gallery-item:hover img {
-  transform: scale(1.02);
+.gallery-item:hover img,
+.gallery-item:focus-visible img {
+  transform: scale(1.045);
+  filter: saturate(1.04);
+}
+
+.gallery-item:hover::after,
+.gallery-item:focus-visible::after {
+  opacity: 1;
 }
 
 .gallery-caption {
   position: absolute;
   inset: auto 0 0;
+  z-index: 2;
   margin: 0;
   padding: 34px 16px 12px;
   color: var(--paper);
   background: linear-gradient(transparent, rgb(28 39 51 / 86%));
   font-size: 0.82rem;
+  transform: translateY(7px);
+  transition: transform 600ms var(--ease-ui), padding-bottom 600ms var(--ease-ui);
+}
+
+.gallery-item:hover .gallery-caption,
+.gallery-item:focus-visible .gallery-caption {
+  padding-bottom: 16px;
+  transform: none;
 }
 
 .cards,
@@ -471,6 +579,7 @@ h3 {
   background: #fff;
   border: 1px solid rgb(110 118 128 / 20%);
   border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
 }
 
 .card {
@@ -772,7 +881,7 @@ h3 {
   border-top: 1px solid rgb(156 131 82 / 55%);
   transform: translateY(110%);
   visibility: hidden;
-  transition: transform 300ms ease, visibility 300ms;
+  transition: transform 360ms var(--ease-ui), visibility 360ms;
 }
 
 .sticky-cta.visible {
@@ -793,7 +902,7 @@ h3 {
 .reveal-ready .reveal.revealed {
   opacity: 1;
   transform: none;
-  transition: opacity 500ms ease-out, transform 500ms ease-out;
+  transition: opacity 700ms var(--ease-reveal), transform 700ms var(--ease-reveal);
 }
 
 .gslide-description {
@@ -849,6 +958,7 @@ h3 {
   .section + .section::before,
   .hero + .section::before {
     background: rgb(156 131 82 / 30%);
+    filter: none;
   }
   .reveal-ready .reveal {
     opacity: 1;

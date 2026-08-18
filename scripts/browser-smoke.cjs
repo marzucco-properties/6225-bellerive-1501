@@ -65,6 +65,15 @@ const { chromium } = require("playwright-core");
     throw new Error("sticky mobile CTA did not appear after hero exit");
   }
   console.log("PASS: sticky mobile CTA appears after hero exits");
+  const navProof = await page.locator(".site-nav").evaluate((element) => ({
+    condensed: element.classList.contains("is-condensed"),
+    position: getComputedStyle(element).position,
+    backdropFilter: getComputedStyle(element).backdropFilter,
+  }));
+  if (!navProof.condensed || navProof.position !== "fixed" || !navProof.backdropFilter.includes("blur")) {
+    throw new Error(`condensed navigation gate failed: ${JSON.stringify(navProof)}`);
+  }
+  console.log(`PASS: fixed condensed glass navigation ${JSON.stringify(navProof)}`);
 
   await page.locator("#gallery").scrollIntoViewIfNeeded();
   await page.locator(".glightbox").first().click();
@@ -97,10 +106,14 @@ const { chromium } = require("playwright-core");
     revealOpacity: getComputedStyle(document.querySelector(".reveal")).opacity,
     heroAnimationDuration: getComputedStyle(document.querySelector(".hero-media img")).animationDuration,
     waterlineAnimationDuration: getComputedStyle(document.querySelector(".hero + .section"), "::before").animationDuration,
+    navTransitionDuration: getComputedStyle(document.querySelector(".site-nav")).transitionDuration,
+    galleryTransitionDuration: getComputedStyle(document.querySelector(".gallery-item img")).transitionDuration,
   }));
   const heroSeconds = Number.parseFloat(reduced.heroAnimationDuration);
   const waterlineSeconds = Number.parseFloat(reduced.waterlineAnimationDuration);
-  if (reduced.revealOpacity !== "1" || heroSeconds > 0.00001 || waterlineSeconds > 0.00001) {
+  const navSeconds = Number.parseFloat(reduced.navTransitionDuration);
+  const gallerySeconds = Number.parseFloat(reduced.galleryTransitionDuration);
+  if (reduced.revealOpacity !== "1" || heroSeconds > 0.00001 || waterlineSeconds > 0.00001 || navSeconds > 0.00001 || gallerySeconds > 0.00001) {
     throw new Error(`reduced-motion gate failed: ${JSON.stringify(reduced)}`);
   }
   console.log(`PASS: reduced-motion gate ${JSON.stringify(reduced)}`);
