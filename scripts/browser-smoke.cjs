@@ -11,7 +11,12 @@ const { chromium } = require("playwright-core");
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   const pageErrors = [];
+  const thirdPartyRequests = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (!['127.0.0.1', 'localhost'].includes(url.hostname)) thirdPartyRequests.push(request.url());
+  });
   await page.goto("http://127.0.0.1:8088/", { waitUntil: "networkidle" });
 
   if (await page.locator("h1").count() !== 1) throw new Error("expected exactly one h1");
@@ -32,15 +37,15 @@ const { chromium } = require("playwright-core");
   await page.locator(".glightbox-container").waitFor({ state: "hidden" });
   console.log("PASS: GLightbox opens and closes by keyboard");
 
-  await page.locator("#feedback").scrollIntoViewIfNeeded();
-  await page.locator("#fb-name").fill("Test Visitor");
-  await page.locator("#fb-email").fill("test@example.com");
-  await page.locator("#fb-interest").selectOption({ label: "Requesting a showing" });
-  await page.locator("#feedbackForm button").click();
-  if (!(await page.locator("#formStatus").textContent()).includes("setup is pending")) {
-    throw new Error("placeholder Formspree endpoint was not safely intercepted");
-  }
-  console.log("PASS: placeholder form is structurally wired and safely intercepted");
+  const formState = await page.locator("#feedbackForm").evaluate((form) => ({
+    action: form.getAttribute("action"),
+    submitDisabled: form.querySelector('button[type="submit"]').disabled,
+  }));
+  if (formState.action !== "" || !formState.submitDisabled) throw new Error(`feedback form is not inert: ${JSON.stringify(formState)}`);
+  console.log("PASS: feedback form keeps empty action and disabled submit");
+
+  if (thirdPartyRequests.length) throw new Error(`third-party requests: ${thirdPartyRequests.join(" | ")}`);
+  console.log("PASS: zero third-party network requests");
 
   if (pageErrors.length) throw new Error(`page errors: ${pageErrors.join(" | ")}`);
   await context.close();

@@ -5,18 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>6225 Bellerive Ave #1501 — Naples Lakefront Rental</title>
   <meta name="description" content="Renovated 3 bed, 2 bath lakefront condominium for lease in Bellerive at The Vineyards, Naples FL. First-floor end unit, 1,708 SF, screened lanai with lake and fountain view. $3,100/month unfurnished annual lease.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Mulish:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" type="image/webp" href="photos/optimized/hero-lanai-lake-960.webp" imagesrcset="photos/optimized/hero-lanai-lake-480.webp 480w, photos/optimized/hero-lanai-lake-960.webp 960w, photos/optimized/hero-lanai-lake-1600.webp 1600w, photos/optimized/hero-lanai-lake-1920.webp 1920w" imagesizes="100vw" fetchpriority="high">
   <link rel="stylesheet" href="vendor/glightbox/glightbox.min.css">
   <link rel="stylesheet" href="assets/site.css">
-
-  <!-- Plausible placeholder: replace YOUR_PLAUSIBLE_DOMAIN only after an account exists. -->
-  <script defer event-page="bellerive-1501" src="https://plausible.io/js/script.tagged-events.js" data-domain="YOUR_PLAUSIBLE_DOMAIN"></script>
-  <script>window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments);};</script>
 </head>
-<body>
+<body data-analytics-scroll-event="scroll_75">
   <a class="skip-link" href="#main">Skip to main content</a>
 
   <svg class="svg-sprite" width="0" height="0" aria-hidden="true" focusable="false">
@@ -47,7 +41,7 @@
           <li><a href="#community">Community</a></li>
         </ul>
       </nav>
-      <a class="button plausible-event-name=Showing+Request" href="#contact">Request a Showing</a>
+      <a class="button" href="#contact" data-analytics-event="showing_request">Request a Showing</a>
     </div>
   </header>
 
@@ -69,7 +63,7 @@
           <div class="price-note">Unfurnished · Annual lease<br>Association covers cable, internet, water, sewer &amp; more</div>
         </div>
         <div class="cta-group">
-          <a class="button plausible-event-name=Showing+Request" href="#contact">Request a Private Showing</a>
+          <a class="button" href="#contact" data-analytics-event="showing_request">Request a Private Showing</a>
           <a class="button button-ghost" href="#gallery">View Photos</a>
         </div>
       </div>
@@ -94,7 +88,7 @@
         <p class="eyebrow">Photo Gallery</p>
         <h2 id="gallery-title">Inside the Residence</h2>
         <p class="lead">Renovated throughout and offered move-in ready. The lanai looks directly over the lake and fountain, and the unit sits beside the community pool.</p>
-        <div class="gallery">
+        <div class="gallery" data-analytics-event="gallery_open">
           <a class="gallery-item feature glightbox" href="photos/optimized/hero-lanai-lake-1600.webp" data-gallery="residence" data-title="Screened lanai — lake and fountain view">
             <picture><source type="image/webp" srcset="photos/optimized/hero-lanai-lake-480.webp 480w, photos/optimized/hero-lanai-lake-960.webp 960w, photos/optimized/hero-lanai-lake-1600.webp 1600w" sizes="(min-width: 1080px) 1080px, calc(100vw - 40px)"><img src="photos/optimized/hero-lanai-lake-480.jpg" srcset="photos/optimized/hero-lanai-lake-480.jpg 480w, photos/optimized/hero-lanai-lake-960.jpg 960w, photos/optimized/hero-lanai-lake-1600.jpg 1600w" sizes="(min-width: 1080px) 1080px, calc(100vw - 40px)" width="960" height="542" loading="lazy" decoding="async" alt="Screened lanai overlooking the lake and fountain"></picture>
             <span class="gallery-caption">Screened lanai — lake and fountain view</span>
@@ -185,7 +179,7 @@
         <div class="cards"><article class="card"><h3>Community Pool</h3><p>Lakefront pool a few steps from the unit.</p></article><article class="card"><h3>Tennis</h3><p>Community tennis within The Vineyards.</p></article><article class="card"><h3>Bike &amp; Jog Paths</h3><p>Walking and cycling paths throughout.</p></article><article class="card"><h3>Clubhouse</h3><p>Community clubhouse and social spaces.</p></article><article class="card"><h3>Gated Entry</h3><p>Controlled access community.</p></article><article class="card"><h3>Underground Utility</h3><p>Underground utilities throughout the community.</p></article></div>
         <h3 class="subheading">Location</h3>
         <div class="cards"><article class="card"><h3>Physicians Regional</h3><p>Roughly a mile and a half away on Pine Ridge Road.</p></article><article class="card"><h3>Shopping &amp; Dining</h3><p>The Vineyards corridor sits near the community entrance.</p></article><article class="card"><h3>I-75 Access</h3><p>Close by for commuting north or south.</p></article><article class="card"><h3>Mercato &amp; Waterside</h3><p>A short drive west.</p></article><article class="card"><h3>Gulf Beaches</h3><p>Vanderbilt Beach and Delnor-Wiggins to the west.</p></article><article class="card"><h3>North Naples</h3><p>Central location in the NA14 corridor.</p></article></div>
-        <iframe class="map-frame" title="Map showing 6225 Bellerive Avenue in Naples, Florida" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=6225%20Bellerive%20Ave%2C%20Naples%2C%20FL%2034119&amp;output=embed"></iframe>
+        <a class="map-frame map-link" href="https://www.google.com/maps/search/?api=1&amp;query=6225%20Bellerive%20Ave%2C%20Naples%2C%20FL%2034119" target="_blank" rel="noopener">Open 6225 Bellerive Avenue in Google Maps</a>
       </div>
     </section>
 
@@ -195,15 +189,15 @@
           <p class="eyebrow">Schedule a Showing</p>
           <h2 id="contact-title">See It in Person</h2>
           <p class="lead">Available now for an annual unfurnished lease. Reach out to arrange a private showing or to request the association's application packet and written rules.</p>
-          <a class="button plausible-event-name=Email+Tap" href="mailto:dluxnaples@gmail.com?subject=6225%20Bellerive%20Ave%20%231501%20—%20Showing%20Request">Email About This Property</a>
+          <a class="button" href="mailto:dluxnaples@gmail.com?subject=6225%20Bellerive%20Ave%20%231501%20—%20Showing%20Request" data-analytics-event="email_tap">Email About This Property</a>
         </div>
         <div class="agent-card">
           <h3 class="agent-name">DeShawn Robinson</h3>
           <div class="agent-title">Managing Partner &amp; Broker · Marzucco Real Estate</div>
-          <a class="contact-link plausible-event-name=Phone+Tap" href="tel:+12397765194"><svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg><span>(239) 776-5194</span></a>
-          <a class="contact-link plausible-event-name=Email+Tap" href="mailto:dluxnaples@gmail.com"><svg class="icon" aria-hidden="true"><use href="#icon-mail"/></svg><span>dluxnaples@gmail.com</span></a>
+          <a class="contact-link" href="tel:+12397765194" data-analytics-event="phone_tap"><svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg><span>(239) 776-5194</span></a>
+          <a class="contact-link" href="mailto:dluxnaples@gmail.com" data-analytics-event="email_tap"><svg class="icon" aria-hidden="true"><use href="#icon-mail"/></svg><span>dluxnaples@gmail.com</span></a>
           <div class="contact-link"><svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg><span>400 5th Ave S, Suite 305, Naples, FL 34102</span></div>
-          <div class="co-agent"><div class="co-label">Co-Listing Agent</div><div>Aimee Rodriguez</div><a class="contact-link plausible-event-name=Phone+Tap" href="tel:+12392386358"><svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg><span>(239) 238-6358</span></a></div>
+          <div class="co-agent"><div class="co-label">Co-Listing Agent</div><div>Aimee Rodriguez</div><a class="contact-link" href="tel:+12392386358" data-analytics-event="phone_tap"><svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg><span>(239) 238-6358</span></a></div>
         </div>
       </div>
     </section>
@@ -213,16 +207,17 @@
         <p class="eyebrow">Feedback &amp; Interest</p>
         <h2 id="feedback-title">Tell Us What You Think</h2>
         <p class="lead">Toured the residence or viewed it online? A moment of feedback helps — and if you'd like a showing, this is the fastest way to request one.</p>
-        <!-- Formspree placeholder: replace YOUR_FORM_ID only after the form exists. -->
-        <form id="feedbackForm" action="https://formspree.io/f/YOUR_FORM_ID" method="post">
+        <!-- Feedback endpoint pending. Keep action empty and submit disabled until the first-party endpoint exists. -->
+        <!-- [html-validate-disable-next attribute-allowed-values -- Intentional empty action while endpoint is pending.] -->
+        <form id="feedbackForm" action="" method="post">
           <label for="fb-name">Name</label><input id="fb-name" type="text" name="name" autocomplete="name" required>
           <label for="fb-email">Email</label><input id="fb-email" type="email" name="email" autocomplete="email" required>
           <label for="fb-interest">I'm reaching out about</label><select id="fb-interest" name="interest" required><option value="" disabled selected>Choose one</option><option>Requesting a showing</option><option>Feedback after a tour</option><option>Feedback on the online listing</option><option>Application &amp; approval questions</option><option>Something else</option></select>
           <label for="fb-message">Message</label><textarea id="fb-message" name="message" rows="5" placeholder="What stood out? What questions do you have?"></textarea>
           <input type="hidden" name="_subject" value="Bellerive #1501 — Website Feedback / Inquiry">
           <label class="honeypot" for="fb-gotcha">Leave this field blank</label><input class="honeypot" id="fb-gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
-          <button type="submit" class="button plausible-event-name=Feedback+Submitted">Send Message</button>
-          <p class="fine">Goes directly to the listing broker. No account needed.</p>
+          <button type="submit" class="button" data-analytics-event="feedback_submitted" disabled>Send Message</button>
+          <p class="fine">Online submission is pending. Please use the email or phone contact above.</p>
           <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
         </form>
       </div>
@@ -238,7 +233,7 @@
     </div>
   </footer>
 
-  <div class="sticky-cta" id="stickyCta"><a class="button plausible-event-name=Showing+Request" href="#contact">Request a Showing</a></div>
+  <div class="sticky-cta" id="stickyCta"><a class="button" href="#contact" data-analytics-event="showing_request">Request a Showing</a></div>
 
   <script src="vendor/glightbox/glightbox.min.js"></script>
   <script src="assets/site.js"></script>

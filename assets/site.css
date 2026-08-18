@@ -568,6 +568,18 @@ h3 {
   background: var(--linen);
 }
 
+.map-link {
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--linen), #dfe8ea);
+  font-weight: 600;
+  text-align: center;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
 .dark .lead,
 .dark .eyebrow {
   color: #c6d4da;

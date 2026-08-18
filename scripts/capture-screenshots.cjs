@@ -19,6 +19,12 @@ const cases = [
   });
   for (const item of cases) {
     const page = await browser.newPage({ viewport: { width: item.width, height: item.height } });
+    const consoleErrors = [];
+    const pageErrors = [];
+    page.on("console", (message) => {
+      if (message.type() === "error") consoleErrors.push(`${message.text()} (${message.location().url})`);
+    });
+    page.on("pageerror", (error) => pageErrors.push(error.message));
     await page.goto("http://127.0.0.1:8088/", { waitUntil: "networkidle" });
     await page.evaluate(async () => {
       document.documentElement.style.scrollBehavior = "auto";
@@ -41,6 +47,11 @@ const cases = [
       path: path.join(root, "evidence", `screenshot-${item.name}.png`),
       fullPage: true,
     });
+    const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+    if (hasHorizontalOverflow || consoleErrors.length || pageErrors.length) {
+      throw new Error(`${item.name}px render failed: overflow=${hasHorizontalOverflow} console=${consoleErrors.join(" | ")} page=${pageErrors.join(" | ")}`);
+    }
+    console.log(`PASS: ${item.name}px render; no horizontal overflow, console errors, or page errors`);
     await page.close();
   }
   await browser.close();

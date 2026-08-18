@@ -5,6 +5,24 @@
   var hero = document.getElementById("hero");
   var stickyCta = document.getElementById("stickyCta");
 
+  function trackAnalyticsEvent(eventName) {
+    var payload = {
+      event: eventName,
+      path: window.location.pathname,
+      referrer: document.referrer || null,
+      timestamp: new Date().toISOString()
+    };
+
+    // INERT: enable only after the first-party Cloudflare Worker is deployed.
+    // fetch("https://analytics.marzuccoselite.com/e", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), keepalive: true });
+    void payload;
+  }
+
+  document.addEventListener("click", function (event) {
+    var target = event.target.closest("a[data-analytics-event], button[data-analytics-event]");
+    if (target) trackAnalyticsEvent(target.dataset.analyticsEvent);
+  });
+
   if ("IntersectionObserver" in window && hero && stickyCta) {
     new IntersectionObserver(function (entries) {
       stickyCta.classList.toggle("visible", !entries[0].isIntersecting);
@@ -40,7 +58,8 @@
   });
 
   lightbox.on("open", function () {
-    if (typeof window.plausible === "function") window.plausible("Gallery Open");
+    var gallery = document.querySelector(".gallery[data-analytics-event]");
+    if (gallery) trackAnalyticsEvent(gallery.dataset.analyticsEvent);
   });
 
   var scrollEventFired = false;
@@ -50,15 +69,10 @@
     var depth = (window.scrollY + window.innerHeight) / pageHeight;
     if (depth >= 0.75) {
       scrollEventFired = true;
-      if (typeof window.plausible === "function") window.plausible("Scroll 75");
+      if (document.body.dataset.analyticsScrollEvent) {
+        trackAnalyticsEvent(document.body.dataset.analyticsScrollEvent);
+      }
     }
   }, { passive: true });
 
-  var feedbackForm = document.getElementById("feedbackForm");
-  if (feedbackForm && feedbackForm.action.indexOf("YOUR_FORM_ID") !== -1) {
-    feedbackForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      document.getElementById("formStatus").textContent = "Form setup is pending. Please use the email or phone contact above.";
-    });
-  }
 })();

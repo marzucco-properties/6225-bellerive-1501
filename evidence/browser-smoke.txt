@@ -1,6 +1,0 @@
-PASS: semantic h1 and 15 lazy gallery images
-PASS: sticky mobile CTA appears after hero exits
-PASS: GLightbox opens and closes by keyboard
-PASS: placeholder form is structurally wired and safely intercepted
-PASS: reduced-motion gate {"revealOpacity":"1","heroAnimationDuration":"1e-05s","waterlineAnimationDuration":"1e-05s"}
-VERDICT: PASS

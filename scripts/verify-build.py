@@ -109,7 +109,15 @@ if current.select_one("#stickyCta") is None or "prefers-reduced-motion" not in (
     fail("sticky CTA or reduced-motion gate missing")
 if "IntersectionObserver" not in (ROOT / "assets/site.js").read_text():
     fail("IntersectionObserver implementation missing")
-if "YOUR_FORM_ID" not in current_source or "YOUR_PLAUSIBLE_DOMAIN" not in current_source:
-    fail("integration placeholders missing")
-print("PASS: SVG icon, semantic h1, sticky CTA, motion, and placeholder integration gates")
+feedback_form = current.select_one("#feedbackForm")
+feedback_submit = current.select_one('#feedbackForm button[type="submit"]')
+if feedback_form is None or feedback_form.get("action") != "":
+    fail("feedback form action must remain empty")
+if feedback_submit is None or not feedback_submit.has_attr("disabled"):
+    fail("feedback form submit must remain disabled")
+if "plausible" in current_source.lower() or "formspree" in current_source.lower():
+    fail("third-party analytics/form dependency remains")
+if 'data-analytics-event="gallery_open"' not in current_source or 'data-analytics-scroll-event="scroll_75"' not in current_source:
+    fail("first-party gallery/scroll analytics hooks missing")
+print("PASS: SVG icon, semantic h1, sticky CTA, motion, and inert first-party integration gates")
 print("VERDICT: PASS")
