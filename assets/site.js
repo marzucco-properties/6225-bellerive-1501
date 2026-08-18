@@ -1,0 +1,64 @@
+(function () {
+  "use strict";
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var hero = document.getElementById("hero");
+  var stickyCta = document.getElementById("stickyCta");
+
+  if ("IntersectionObserver" in window && hero && stickyCta) {
+    new IntersectionObserver(function (entries) {
+      stickyCta.classList.toggle("visible", !entries[0].isIntersecting);
+    }, { threshold: 0.05 }).observe(hero);
+  }
+
+  var revealItems = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
+  if (!reduceMotion && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("reveal-ready");
+    var revealObserver = new IntersectionObserver(function (entries, observer) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.revealTarget.classList.add("revealed");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealItems.forEach(function (item) {
+      var trigger = item.querySelector(".eyebrow") || item;
+      trigger.revealTarget = item;
+      revealObserver.observe(trigger);
+    });
+  }
+
+  var lightbox = GLightbox({
+    selector: ".glightbox",
+    touchNavigation: true,
+    loop: true,
+    zoomable: true,
+    keyboardNavigation: true,
+    openEffect: reduceMotion ? "none" : "fade",
+    closeEffect: reduceMotion ? "none" : "fade"
+  });
+
+  lightbox.on("open", function () {
+    if (typeof window.plausible === "function") window.plausible("Gallery Open");
+  });
+
+  var scrollEventFired = false;
+  window.addEventListener("scroll", function () {
+    if (scrollEventFired) return;
+    var pageHeight = document.documentElement.scrollHeight;
+    var depth = (window.scrollY + window.innerHeight) / pageHeight;
+    if (depth >= 0.75) {
+      scrollEventFired = true;
+      if (typeof window.plausible === "function") window.plausible("Scroll 75");
+    }
+  }, { passive: true });
+
+  var feedbackForm = document.getElementById("feedbackForm");
+  if (feedbackForm && feedbackForm.action.indexOf("YOUR_FORM_ID") !== -1) {
+    feedbackForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      document.getElementById("formStatus").textContent = "Form setup is pending. Please use the email or phone contact above.";
+    });
+  }
+})();
