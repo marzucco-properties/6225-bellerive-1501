@@ -6,7 +6,15 @@ const { chromium } = require("playwright-core");
 
 const beforeUrl = process.argv[2] || "http://127.0.0.1:8089/";
 const afterUrl = process.argv[3] || "http://127.0.0.1:8088/";
-const selectors = ["#included", "#details", "#terms", "#contact", "footer"];
+const selectors = ["#included", "#details", "#terms", "footer"];
+const contactFacts = [
+  "DeShawn Robinson",
+  "Aimee Rodriguez",
+  "(239) 776-5194",
+  "(239) 238-6358",
+  "dluxnaples@gmail.com",
+  "400 5th Ave S, Suite 305, Naples, FL 34102",
+];
 const iconGlyphs = ["🌊", "✨", "🏊", "📶", "🚪", "🔒", "⛳", "🧺", "🛡", "✉", "📍", "🏠", "📞", "️"];
 
 function normalize(value) {
@@ -31,6 +39,7 @@ function hash(value) {
     for (const selector of selectors) {
       captures[label][selector] = normalize(await page.locator(selector).innerText());
     }
+    captures[label].contact = normalize(await page.locator("#contact").innerText());
   }
   await browser.close();
 
@@ -44,7 +53,14 @@ function hash(value) {
     }
     console.log(`PASS: rendered protected text unchanged for ${selector}`);
   }
-  console.log("VERDICT: PASS — zero protected disclosure/contact/detail text lost");
+  for (const fact of contactFacts) {
+    if (!captures.before.contact.includes(fact) || !captures.after.contact.includes(fact)) {
+      console.error(`FAIL: protected contact fact missing: ${fact}`);
+      process.exit(1);
+    }
+    console.log(`PASS: protected contact fact retained: ${fact}`);
+  }
+  console.log("VERDICT: PASS — protected disclosure/detail text unchanged and protected contact facts retained");
 })().catch((error) => {
   console.error(`FAIL: ${error.message}`);
   process.exit(1);

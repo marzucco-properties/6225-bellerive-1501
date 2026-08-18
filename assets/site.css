@@ -10,6 +10,7 @@
   --ease-ui: cubic-bezier(.4, 0, .2, 1);
   --ease-reveal: cubic-bezier(.22, 1, .36, 1);
   --shadow-soft: 0 8px 20px rgb(28 39 51 / 7%), 0 24px 52px rgb(28 39 51 / 6%);
+  --shadow-panel: 0 18px 46px rgb(28 39 51 / 24%), 0 2px 8px rgb(28 39 51 / 16%);
 }
 
 @font-face {
@@ -120,6 +121,18 @@ svg {
   position: absolute;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 a {
   color: inherit;
 }
@@ -193,12 +206,10 @@ textarea:focus-visible,
 }
 
 .brand {
+  width: 168px;
+  flex: 0 0 auto;
   text-decoration: none;
-  font-family: Marcellus, "Marcellus Fallback", serif;
-  font-size: 0.93rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transition: font-size 420ms var(--ease-ui), letter-spacing 420ms var(--ease-ui), opacity 300ms var(--ease-ui);
+  transition: width 420ms var(--ease-ui), opacity 300ms var(--ease-ui);
 }
 
 .brand:hover,
@@ -207,8 +218,7 @@ textarea:focus-visible,
 }
 
 .site-nav.is-condensed .brand {
-  font-size: 0.85rem;
-  letter-spacing: 0.1em;
+  width: 148px;
 }
 
 .nav-links {
@@ -753,21 +763,84 @@ h3 {
 }
 
 .agent-card {
-  padding: 28px;
+  position: relative;
+  display: grid;
+  gap: 28px;
+  padding: 32px 28px 28px;
+  overflow: hidden;
   border: 1px solid rgb(250 248 244 / 18%);
   border-radius: var(--radius);
-  background: rgb(250 248 244 / 5%);
+  background: linear-gradient(145deg, rgb(250 248 244 / 8%), rgb(143 169 180 / 3%));
+  box-shadow: var(--shadow-panel);
+}
+
+.agent-card::before {
+  content: "";
+  position: absolute;
+  inset: auto -12% -52px 18%;
+  height: 126px;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgb(156 131 82 / 22%), transparent 68%);
+}
+
+.agent-portrait-wrap {
+  position: relative;
+  width: 168px;
+  margin-inline: auto;
+}
+
+.agent-portrait-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 8px -8px -8px 8px;
+  border: 1px solid rgb(216 195 145 / 76%);
+  border-radius: 84px 84px 10px 10px;
+}
+
+.agent-portrait-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 84px 84px 10px 10px;
+  background: var(--linen);
+}
+
+.agent-portrait-frame::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 30%;
+  background: linear-gradient(transparent, rgb(156 131 82 / 18%));
+}
+
+.agent-portrait {
+  width: 168px;
+  height: auto;
+}
+
+.agent-details {
+  position: relative;
+  min-width: 0;
 }
 
 .agent-name {
-  margin-bottom: 3px;
-  font-size: 1.45rem;
+  margin-bottom: 5px;
+  font-size: clamp(1.65rem, 5vw, 2.1rem);
 }
 
 .agent-title {
-  margin-bottom: 16px;
+  margin: 0 0 8px;
   color: #d8c391;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.agent-license {
+  margin: 0 0 16px;
+  color: rgb(250 248 244 / 62%);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
 }
 
 .contact-link {
@@ -777,6 +850,13 @@ h3 {
   gap: 10px;
   border-bottom: 1px solid rgb(250 248 244 / 12%);
   text-decoration: none;
+  transition: color 300ms var(--ease-ui), border-color 300ms var(--ease-ui);
+}
+
+a.contact-link:hover,
+a.contact-link:focus-visible {
+  color: #d8c391;
+  border-bottom-color: rgb(216 195 145 / 58%);
 }
 
 .contact-link .icon {
@@ -794,6 +874,11 @@ h3 {
 .co-label {
   color: rgb(250 248 244 / 60%);
   font-size: 0.78rem;
+}
+
+.co-name {
+  font-family: Marcellus, "Marcellus Fallback", serif;
+  font-size: 1.05rem;
 }
 
 .feedback {
@@ -857,6 +942,11 @@ h3 {
 
 .site-footer strong {
   color: var(--paper);
+}
+
+.footer-logo {
+  width: min(260px, 68vw);
+  margin-bottom: 28px;
 }
 
 .eho-line {
@@ -941,6 +1031,7 @@ h3 {
   .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .terms-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .contact-grid { gap: 64px; }
+  .agent-card { grid-template-columns: 168px minmax(0, 1fr); align-items: start; padding: 32px; }
   .sticky-cta { display: none; }
   .site-footer { padding-bottom: 42px; }
 }

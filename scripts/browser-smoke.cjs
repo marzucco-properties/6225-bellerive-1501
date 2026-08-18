@@ -59,6 +59,25 @@ const { chromium } = require("playwright-core");
   if (await page.locator("#gallery img[loading=lazy]").count() !== 15) throw new Error("gallery lazy-loading count mismatch");
   console.log("PASS: semantic h1 and 15 lazy gallery images");
 
+  await page.locator(".agent-portrait").scrollIntoViewIfNeeded();
+  await page.locator(".agent-portrait").evaluate((image) => image.decode());
+  const brandProof = await page.evaluate(() => {
+    const portrait = document.querySelector(".agent-portrait");
+    const rect = portrait.getBoundingClientRect();
+    return {
+      portraitCssWidth: rect.width,
+      portraitNaturalWidth: portrait.naturalWidth,
+      effectiveDpr: portrait.naturalWidth / rect.width,
+      portraitAlt: portrait.alt,
+      wordmarkCount: document.querySelectorAll('.brand img[src$="logo-marzucco-luxury-white.svg"], .footer-logo[src$="logo-marzucco-luxury-white.svg"]').length,
+    };
+  });
+  if (brandProof.portraitCssWidth !== 168 || brandProof.portraitNaturalWidth !== 352 || brandProof.effectiveDpr < 2 ||
+      !brandProof.portraitAlt || brandProof.wordmarkCount !== 2) {
+    throw new Error(`brand identity gate failed: ${JSON.stringify(brandProof)}`);
+  }
+  console.log(`PASS: portrait and wordmarks ${JSON.stringify(brandProof)}`);
+
   await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.2));
   await page.waitForTimeout(450);
   if (!await page.locator("#stickyCta").evaluate((element) => element.classList.contains("visible"))) {

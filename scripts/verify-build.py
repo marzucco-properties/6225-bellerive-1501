@@ -39,8 +39,10 @@ current = BeautifulSoup(current_source, "html.parser")
 baseline = BeautifulSoup(baseline_source, "html.parser")
 
 # Exact section-level text equality covers all terms, fees, approval language,
-# agent contacts, MLS details, fair-housing copy, and listing disclaimers.
-for selector in ("#included", "#details", "#terms", "#contact", "footer"):
+# MLS details, fair-housing copy, virtual-staging language, and disclaimers.
+# The contact layout intentionally adds brand/identity text, so its protected
+# facts are verified individually below instead of requiring byte equality.
+for selector in ("#included", "#details", "#terms", "footer"):
     before = baseline.select_one(selector)
     after = current.select_one(selector)
     if before is None or after is None:
@@ -52,17 +54,34 @@ for selector in ("#included", "#details", "#terms", "#contact", "footer"):
         raise SystemExit(1)
     print(f"PASS: protected visible text unchanged for {selector}")
 
-for required in (
-    "MLS# 226029254",
-    "DeShawn Robinson",
-    "Aimee Rodriguez",
-    "All information contained herein is deemed reliable but is not guaranteed",
-    "This property is offered for lease without regard to race, color, religion, sex, handicap, familial status, national origin, or any other protected class.",
-    'Any photograph labeled "Virtually Staged" depicts digitally added furnishings for illustration only',
-):
-    if required not in normalized_text(current):
-        fail(f"required frozen text missing: {required}")
-print("PASS: named frozen content present")
+required_categories = {
+    "lease terms": ("$3,100 Per Month", "$2,500 Security Deposit", "60 Day Minimum Lease", "2 Max Leases Per Year"),
+    "fee disclosures": ("$50 rental office application fee", "$25 credit application fee", "$50 per applicant", "$250 departure/cleaning fee"),
+    "association approval": ("Association approval is mandatory", "approval period runs approximately 20 days"),
+    "fair housing / equal housing opportunity": ("This property is offered for lease without regard to race, color, religion, sex, handicap, familial status, national origin, or any other protected class.", "Equal Housing Opportunity."),
+    "virtual staging": ('Any photograph labeled "Virtually Staged" depicts digitally added furnishings for illustration only',),
+    "deemed-reliable disclaimer": ("All information contained herein is deemed reliable but is not guaranteed",),
+    "listing agents": ("DeShawn Robinson", "Aimee Rodriguez", "(239) 776-5194", "(239) 238-6358", "dluxnaples@gmail.com"),
+    "MLS number": ("MLS# 226029254",),
+}
+all_text = normalized_text(current)
+for category, required_strings in required_categories.items():
+    for required in required_strings:
+        if required not in all_text:
+            fail(f"{category} content missing: {required}")
+    print(f"PASS: {category}")
+print("PASS: disclosure/contact fact matrix complete")
+
+portrait = current.select_one(".agent-portrait")
+if portrait is None or portrait.get("src") != "assets/brand/deshawn-headshot-beach-352x394.png":
+    fail("DeShawn portrait asset missing")
+if portrait.get("width") != "352" or portrait.get("height") != "394" or not portrait.get("alt"):
+    fail("DeShawn portrait dimensions or alt text missing")
+if "BK3335121" not in all_text:
+    fail("DeShawn broker license missing")
+if len(current.select(".brand img, .footer-logo")) != 2:
+    fail("official Marzucco wordmark must appear in navigation and footer")
+print("PASS: portrait identity, license, alt text, and two official wordmarks")
 
 originals = sorted(ORIGINALS.glob("*.jpg"))
 if len(originals) != 15:

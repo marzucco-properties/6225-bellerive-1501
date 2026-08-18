@@ -7,6 +7,7 @@ const { chromium } = require("playwright-core");
 
 const root = path.resolve(__dirname, "..");
 const evidenceDir = process.env.EVIDENCE_DIR || path.join(root, "evidence");
+const siteUrl = process.env.SITE_URL || "http://127.0.0.1:8088/";
 const requestedViewports = new Set((process.env.VIEWPORTS || "360,390,768,1280").split(","));
 const cases = [
   { name: "360", width: 360, height: 800 },
@@ -29,7 +30,7 @@ const cases = [
       if (message.type() === "error") consoleErrors.push(`${message.text()} (${message.location().url})`);
     });
     page.on("pageerror", (error) => pageErrors.push(error.message));
-    await page.goto("http://127.0.0.1:8088/", { waitUntil: "networkidle" });
+    await page.goto(siteUrl, { waitUntil: "networkidle" });
     await page.evaluate(async () => {
       document.documentElement.style.scrollBehavior = "auto";
       const step = Math.max(320, Math.floor(window.innerHeight * 0.7));
@@ -50,6 +51,17 @@ const cases = [
     await page.screenshot({
       path: path.join(evidenceDir, `screenshot-${item.name}.png`),
       fullPage: true,
+    });
+    await page.evaluate(() => {
+      const card = document.querySelector(".agent-card");
+      const navHeight = document.querySelector(".site-nav").getBoundingClientRect().height;
+      window.scrollTo(0, card.getBoundingClientRect().top + window.scrollY - navHeight - 18);
+    });
+    await page.waitForTimeout(500);
+    const navCondensed = await page.locator(".site-nav").evaluate((element) => element.classList.contains("is-condensed"));
+    if (!navCondensed) throw new Error(`${item.name}px condensed navigation state did not activate`);
+    await page.screenshot({
+      path: path.join(evidenceDir, `screenshot-${item.name}-contact-nav-scrolled.png`),
     });
     const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     if (hasHorizontalOverflow || consoleErrors.length || pageErrors.length) {
