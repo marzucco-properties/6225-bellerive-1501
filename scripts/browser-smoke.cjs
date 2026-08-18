@@ -2,6 +2,7 @@
 // Runtime checks for the listing's highest-value interactions and motion gate.
 
 const { chromium } = require("playwright-core");
+const baseUrl = process.env.TEST_BASE_URL || "http://127.0.0.1:8088";
 
 (async () => {
   const browser = await chromium.launch({
@@ -21,7 +22,7 @@ const { chromium } = require("playwright-core");
     const url = new URL(request.url());
     if (!['127.0.0.1', 'localhost'].includes(url.hostname)) thirdPartyRequests.push(request.url());
   });
-  await page.goto("http://127.0.0.1:8088/", { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}/`, { waitUntil: "networkidle" });
 
   const fontProof = await page.evaluate(async () => {
     await document.fonts.ready;
@@ -50,7 +51,7 @@ const { chromium } = require("playwright-core");
       !fontProof.fontResources.some((url) => url.includes("/assets/fonts/marcellus/")) ||
       !fontProof.fontResources.some((url) => url.includes("/assets/fonts/mulish/mulish-400-")) ||
       !fontProof.fontResources.some((url) => url.includes("/assets/fonts/mulish/mulish-600-")) ||
-      fontProof.fontResources.some((url) => new URL(url).origin !== "http://127.0.0.1:8088")) {
+      fontProof.fontResources.some((url) => new URL(url).origin !== baseUrl)) {
     throw new Error(`self-hosted font gate failed: ${JSON.stringify(fontProof)}`);
   }
   console.log(`PASS: self-hosted fonts loaded and applied ${JSON.stringify(fontProof)}`);
@@ -105,8 +106,10 @@ const { chromium } = require("playwright-core");
     action: form.getAttribute("action"),
     submitDisabled: form.querySelector('button[type="submit"]').disabled,
   }));
-  if (formState.action !== "" || !formState.submitDisabled) throw new Error(`feedback form is not inert: ${JSON.stringify(formState)}`);
-  console.log("PASS: feedback form keeps empty action and disabled submit");
+  if (formState.action !== null || formState.submitDisabled) throw new Error(`feedback form is not wired for the email composer: ${JSON.stringify(formState)}`);
+  const mailComposer = await page.evaluate(() => document.querySelector("#feedbackForm") && document.querySelector("#formStatus") && document.querySelector("#feedbackForm button[type='submit']").textContent.includes("Send Message"));
+  if (!mailComposer) throw new Error("feedback form email-composer controls missing");
+  console.log("PASS: feedback form is enabled and wired for the first-party email composer");
 
   if (thirdPartyRequests.length) throw new Error(`third-party requests: ${thirdPartyRequests.join(" | ")}`);
   console.log("PASS: zero third-party network requests");
@@ -120,7 +123,7 @@ const { chromium } = require("playwright-core");
     reducedMotion: "reduce",
   });
   const reducedPage = await reducedContext.newPage();
-  await reducedPage.goto("http://127.0.0.1:8088/", { waitUntil: "domcontentloaded" });
+  await reducedPage.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
   const reduced = await reducedPage.evaluate(() => ({
     revealOpacity: getComputedStyle(document.querySelector(".reveal")).opacity,
     heroAnimationDuration: getComputedStyle(document.querySelector(".hero-media img")).animationDuration,
